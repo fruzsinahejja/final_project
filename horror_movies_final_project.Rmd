@@ -15,26 +15,26 @@ library(lubridate)
 
 In the final project, I will use a dataset containing horror movies and information based on their production and popularity, likeability.
 
-##Reading the dataset
+## Reading the dataset
 ```{r}
 horror_movies <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/refs/heads/main/data/2022/2022-11-01/horror_movies.csv") #Read from the TidyTuesday github page.
 ```
-##Checking the structure of the dataset
+## Checking the structure of the dataset
 ```{r}
 str(horror_movies)
 ```
-#Exploratory data analysis
+# Exploratory data analysis
 Firs a quick overview of all the variables
 ```{r}
 summary(horror_movies)
 ```
-##Creating and exploring the year variable
+## Creating and exploring the year variable
 ```{r}
 horror_movies <- horror_movies %>%
 
   mutate(year = year(release_date))
 ```
-###Checking which year most of the movies are from in the dataset
+### Checking which year most of the movies are from in the dataset
 ```{r}
 horror_movies %>%
   count(year) %>%
@@ -47,7 +47,7 @@ ggplot(horror_movies, aes(x = year)) +
        y = "Number of movies")
   theme_minimal()
 ```
-##Filtering out movies less voted for and exploring average ratings
+## Filtering out movies less voted for and exploring average ratings
 ```{r}
 horror_movies <- horror_movies %>%
   filter(vote_count > 1000)
@@ -62,14 +62,14 @@ ggplot(horror_movies, aes(x = vote_average)) +
        y = "Number of movies") +
   theme_minimal()
 ```
-###What are the top 10 movies based on the average vote?
+### What are the top 10 movies based on the average vote?
 ```{r}
 horror_movies %>%
   arrange(desc(vote_average)) %>%
   select(title, vote_average) %>%
   head(10)
 ```
-##What are the co-occuring genres in horror movies?
+## What are the co-occuring genres in horror movies?
 ```{r}
 horror_movies %>% #What is the most common co-oocuring genre with horror movies
   separate_rows(genre_names, sep = ", ") %>%
@@ -83,13 +83,13 @@ horror_movies %>% #What is the most common co-oocuring genre with horror movies
        y = "Genre") +
   theme_minimal()
 ```
-##Exploring budget and revenue
-###Removing missing data from the budget and revenue variables
+## Exploring budget and revenue
+### Removing missing data from the budget and revenue variables
 ```{r}
 horror_movies <- horror_movies %>%
   filter(budget > 0, revenue > 0)
 ```
-##Checking budget vs revenue with scatterplot
+## Checking budget vs revenue with scatterplot
 ```{r}
 ggplot(horror_movies, aes(x = budget, y = revenue)) +
   geom_point(color = "skyblue") +
@@ -101,27 +101,27 @@ ggplot(horror_movies, aes(x = budget, y = revenue)) +
   theme_minimal()
   
 ```
-###What movie was the most expensive to make?
+### What movie was the most expensive to make?###
 ```{r}
 horror_movies %>%
   arrange(desc(budget)) %>%
   select(title, budget) %>%
   head(1)
 ```
-###What movie had the highest revenue?
+### What movie had the highest revenue?
 ```{r}
 horror_movies %>%
   arrange(desc(revenue)) %>%
   select(title, revenue) %>%
   head(1)
 ```
-###How much did that movie cost?
+### How much did that movie cost?
 ```{r}
 horror_movies %>%
   filter(title == "It") %>%
   select(title, budget)
 ```
-#Model building
+# Model building
 Assuming that a higher budget results in a higher quality movie that could be more enjoyable for the audiance, the average vote of the horror movies could be predicted based on budget.
 ```{r}
 modelA <- lm(vote_average ~ budget,
@@ -131,7 +131,7 @@ summary(modelA)
 
 The results show, that the regression model is statistically significant (*F = 4.967*, *p < 0.05*), but it explains only 1.25% of the variance (*R^2 = 0.0125*).
 
-##What other predictors could explain the averahe vote of a horror movie?
+## What other predictors could explain the averahe vote of a horror movie?
 ```{r}
 modelB <- lm(vote_average ~ budget +
                vote_count +
@@ -141,52 +141,53 @@ summary(modelB)
 ```
 The results show, that the more complex model using multiple predictors is statistically significant (*F = 42.93*, *p < 0.01*), and it explains 24.7% of the variance (*R^2 = 0.24*). The model is better than the simple model. 
 
-#Comparing the two models
+# Comparing the two models
 ```{r}
 anova(modelA, modelB)
 ```
 The results of the ANOVA test show, that adding **vote_count** and **revenue** variables as predictors to the model significantly improved the model fit (*F = 61.15, p < 0.01*), and that the more complex model explains more variability (*RSS = 139.94*).
 
 
-#Checking for outliers in modelA
+# Checking for outliers in modelA
 ```{r}
 cooksdA <- cooks.distance(modelA)
 plot(cooksdA, pch = 19, frame = FALSE, main = "Outliers in Model A by Cook's distance")
 ```
 
-#Checking for outliers in modelB
+# Checking for outliers in modelB
 ```{r}
 cooksdB <- cooks.distance(modelB)
 plot(cooksdB, pch = 19, frame = FALSE, main = "Outliers in Model B by Cook's distance")
 ```
 
-#Residual diagnostics, assumption checks for the first, simple model (modelA)
-##Checking normalitiy
+# Residual diagnostics, assumption checks for the first, simple model (modelA)
+
+## Checking normalitiy
 ```{r}
 qqnorm(residuals(modelA))
 qqline(residuals(modelA))
 ```
-##Checking homoscedasticity
+## Checking homoscedasticity
 ```{r}
 plot(modelA, which = 1)
 ```
 
-#Residual diagnostics, assumption checks for the second, multiple model (modelB)
-##Checking normalitiy
+# Residual diagnostics, assumption checks for the second, multiple model (modelB)
+## Checking normalitiy
 ```{r}
 qqnorm(residuals(modelB))
 qqline(residuals(modelB))
 ```
 
-##Checking homoscedasticity
+## Checking homoscedasticity
 ```{r}
 plot(modelB, which = 1)
 ```
-##Checking multicollinearity for the multiple regression model
+## Checking multicollinearity for the multiple regression model
 ```{r}
 vif(modelB)
 ```
 All values are under 3, thus the assumption is not violated.
 
-#Conclusins
+# Conclusins
 The analysis of the dataset about horror movies showed that how people find a movie's quaility and likeability (*idicated by the averahe vote a movie recieves*) is influenced by the budget, but revenue and the number of votes are better predictors of this.
