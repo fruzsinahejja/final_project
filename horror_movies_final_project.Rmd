@@ -186,5 +186,7 @@ plot(modelB, which = 1)
 ```{r}
 vif(modelB)
 ```
+All values are under 3, thus the assumption is not violated.
 
-#Conclusions
+#Conclusins
+The analysis of the dataset about horror movies showed that how people find a movie's quaility and likeability (*idicated by the averahe vote a movie recieves*) is influenced by the budget, but revenue and the number of votes are better predictors of this.
