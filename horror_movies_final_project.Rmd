@@ -29,6 +29,22 @@ summary(horror_movies)
 ```
 ##Creating and exploring the year variable
 ```{r}
+horror_movies <- horror_movies %>%
 
+  mutate(year = year(release_date))
 ```
+###Checking which year most of the movies are from in the dataset
+```{r}
+horror_movies %>%
+  count(year) %>%
+  arrange(desc(n))
+
+ggplot(horror_movies, aes(x = year)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "white") +
+  labs(title = "Number of horror movies per year",
+       x = "Year",
+       y = "Number of movies")
+  theme_minimal()
+```
+
 
