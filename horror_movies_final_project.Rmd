@@ -147,7 +147,28 @@ anova(modelA, modelB)
 The results of the ANOVA test show, that adding **vote_count** and **revenue** variables as predictors to the model significantly improved the model fit (*F = 61.15, p < 0.01*), and that the more complex model explains more variability (*RSS = 139.94*).
 
 
-#Checking for outliers
+#Checking for outliers in modelA
+```{r}
+cooksdA <- cooks.distance(modelA)
+plot(cooksdA, pch = 19, frame = FALSE, main = "Outliers in Model A by Cook's distance")
+```
+
+#Checking for outliers in modelB
+```{r}
+cooksdB <- cooks.distance(modelB)
+plot(cooksdB, pch = 19, frame = FALSE, main = "Outliers in Model B by Cook's distance")
+```
+
+#Residual diagnostics, assumption checks for the first, simple model (modelA)
+```{r}
+
+```
+
+
+
+
+
+#Residual diagnostics, assumption checks for the second, multiple model (modelB)
 ```{r}
 
 ```
