@@ -1,0 +1,34 @@
+---
+title: "Horror Movies"
+author: "Fruzsina Hejja"
+date: "2024-12-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(lubridate)
+```
+
+In the final project, I will use a dataset containing horror movies and information based on their production and popularity, likeability.
+
+##Reading the dataset
+```{r}
+horror_movies <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/refs/heads/main/data/2022/2022-11-01/horror_movies.csv") #Read from the TidyTuesday github page.
+```
+##Checking the structure of the dataset
+```{r}
+str(horror_movies)
+```
+#Exploratory data analysis
+Firs a quick overview of all the variables
+```{r}
+summary(horror_movies)
+```
+##Creating and exploring the year variable
+```{r}
+
+```
+
