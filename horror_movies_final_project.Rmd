@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
+library(car)
 library(lubridate)
 ```
 
@@ -160,16 +161,30 @@ plot(cooksdB, pch = 19, frame = FALSE, main = "Outliers in Model B by Cook's dis
 ```
 
 #Residual diagnostics, assumption checks for the first, simple model (modelA)
+##Checking normalitiy
 ```{r}
-
+qqnorm(residuals(modelA))
+qqline(residuals(modelA))
 ```
-
-
-
-
+##Checking homoscedasticity
+```{r}
+plot(modelA, which = 1)
+```
 
 #Residual diagnostics, assumption checks for the second, multiple model (modelB)
+##Checking normalitiy
 ```{r}
-
+qqnorm(residuals(modelB))
+qqline(residuals(modelB))
 ```
 
+##Checking homoscedasticity
+```{r}
+plot(modelB, which = 1)
+```
+##Checking multicollinearity for the multiple regression model
+```{r}
+vif(modelB)
+```
+
+#Conclusions
