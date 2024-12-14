@@ -48,7 +48,107 @@ ggplot(horror_movies, aes(x = year)) +
 ```
 ##Filtering out movies less voted for and exploring average ratings
 ```{r}
+horror_movies <- horror_movies %>%
+  filter(vote_count > 1000)
 
+summary(horror_movies$vote_count)
+
+
+ggplot(horror_movies, aes(x = vote_average)) +
+  geom_histogram(bins = 20, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of vote averages for horror movies",
+       x = "Vote average",
+       y = "Number of movies") +
+  theme_minimal()
+```
+###What are the top 10 movies based on the average vote?
+```{r}
+horror_movies %>%
+  arrange(desc(vote_average)) %>%
+  select(title, vote_average) %>%
+  head(10)
+```
+##What are the co-occuring genres in horror movies?
+```{r}
+horror_movies %>% #What is the most common co-oocuring genre with horror movies
+  separate_rows(genre_names, sep = ", ") %>%
+  rename(genre = genre_names) %>%
+  filter(genre != "Horror") %>%
+  count(genre) %>%
+  ggplot(aes(x = n, y = fct_reorder(genre, n))) +
+  geom_col(fill = "slateblue") +
+  labs(title = "Most common co-occuring genres with horror movies",
+       x = "Number of movies",
+       y = "Genre") +
+  theme_minimal()
+```
+##Exploring budget and revenue
+###Removing missing data from the budget and revenue variables
+```{r}
+horror_movies <- horror_movies %>%
+  filter(budget > 0, revenue > 0)
+```
+##Checking budget vs revenue with scatterplot
+```{r}
+ggplot(horror_movies, aes(x = budget, y = revenue)) +
+  geom_point(color = "skyblue") +
+  scale_x_continuous(labels = scales::dollar) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(title = "Budget and revenue of horror movies",
+       x = "Budget",
+       y = "Revenue") +
+  theme_minimal()
+  
+```
+###What movie was the most expensive to make?
+```{r}
+horror_movies %>%
+  arrange(desc(budget)) %>%
+  select(title, budget) %>%
+  head(1)
+```
+###What movie had the highest revenue?
+```{r}
+horror_movies %>%
+  arrange(desc(revenue)) %>%
+  select(title, revenue) %>%
+  head(1)
+```
+###How much did that movie cost?
+```{r}
+horror_movies %>%
+  filter(title == "It") %>%
+  select(title, budget)
+```
+#Model building
+Assuming that a higher budget results in a higher quality movie that could be more enjoyable for the audiance, the average vote of the horror movies could be predicted based on budget.
+```{r}
+modelA <- lm(vote_average ~ budget,
+             data = horror_movies)
+summary(modelA)
 ```
 
+The results show, that the regression model is statistically significant (*F = 4.967*, *p < 0.05*), but it explains only 1.25% of the variance (*R^2 = 0.0125*).
+
+##What other predictors could explain the averahe vote of a horror movie?
+```{r}
+modelB <- lm(vote_average ~ budget +
+               vote_count +
+               revenue,
+             data = horror_movies)
+summary(modelB)
+```
+The results show, that the more complex model using multiple predictors is statistically significant (*F = 42.93*, *p < 0.01*), and it explains 24.7% of the variance (*R^2 = 0.24*). The model is better than the simple model. 
+
+#Comparing the two models
+```{r}
+anova(modelA, modelB)
+```
+The results of the ANOVA test show, that adding **vote_count** and **revenue** variables as predictors to the model significantly improved the model fit (*F = 61.15, p < 0.01*), and that the more complex model explains more variability (*RSS = 139.94*).
+
+
+#Checking for outliers
+```{r}
+
+```
 
