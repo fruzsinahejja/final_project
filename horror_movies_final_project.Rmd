@@ -46,5 +46,9 @@ ggplot(horror_movies, aes(x = year)) +
        y = "Number of movies")
   theme_minimal()
 ```
+##Filtering out movies less voted for and exploring average ratings
+```{r}
+
+```
 
 
